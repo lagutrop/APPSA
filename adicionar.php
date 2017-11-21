@@ -6,7 +6,7 @@ privatePage();
 	<h1>Adicionar Socio</h1>
 </div>
 <div>
-	<form id="addForm" ng-controller="submitSocioController">
+	<form id="addForm" ng-controller="submitSocioController" method="post">
 		<div class="row nomargin">
 			<div class="addRow col-md-12">
 				<button type="button" class="btn btn-success btn-number buttonRow" data-type="plus" ng-click="addSocioRow()">
@@ -18,5 +18,10 @@ privatePage();
 			</div>
 		</div>
 		<row-directive></row-directive>
+		<div class="row nomargin">
+			<div class="col text-right">
+				<button id="submeterAdicionar" type="submit" class="btn btn-success btn-lg" ng-click="insertData()">Adicionar socio</button>	
+			</div>
+		</div>
 	</form>
 </div>

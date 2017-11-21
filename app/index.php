@@ -10,6 +10,7 @@ $router->map('GET', '/socio', function() {
 	$json_stringify = json_encode($json_string, JSON_PRETTY_PRINT);
 	echo $json_stringify;
 },'socios');
+
 $router->map('GET', '/socio/[*:id]', function($id) {
 	exec("python ../cgi-bin/requestHandler.py $id", $output);
 	$json = $output[0];
@@ -17,6 +18,11 @@ $router->map('GET', '/socio/[*:id]', function($id) {
 	$json_stringify = json_encode($json_string, JSON_PRETTY_PRINT);
 	echo $json_stringify;
 },'socio');
+
+$router->('POST', '/socio/inserir', function() {
+	exec("python ../cgi-bin/requestHandler.py")
+})
+
 $match = $router->match();
 
 if( $match && is_callable( $match['target'] ) ) {

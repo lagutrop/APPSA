@@ -190,6 +190,14 @@ input.ng-invalid {
 	top: 240px;
 }
 
-row-directive {
+.socio {
+	margin: 20px;
+}
+
+.addLabel {
+	margin-right: 20px;
+}
+
+#submeterAdicionar {
 	margin: 20px;
 }
