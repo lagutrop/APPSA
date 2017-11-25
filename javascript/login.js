@@ -1,4 +1,4 @@
-var app = angular.module('backoffice', ["ngRoute"]);
+var app = angular.module('backoffice', ["ngRoute", "ngSanitize"]);
 
 app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
 	$routeProvider

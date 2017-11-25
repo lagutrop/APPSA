@@ -3,6 +3,7 @@ header("Content-Type: text/json");
 include '../lib//AltoRouter.php';
 $router = new AltoRouter();  
 $router->setBasePath('/appsa/app');
+
 $router->map('GET', '/socio', function() {  
 	exec("python ../cgi-bin/requestHandler.py", $output);
 	$json = $output[0];
@@ -18,10 +19,6 @@ $router->map('GET', '/socio/[*:id]', function($id) {
 	$json_stringify = json_encode($json_string, JSON_PRETTY_PRINT);
 	echo $json_stringify;
 },'socio');
-
-$router->('POST', '/socio/inserir', function() {
-	exec("python ../cgi-bin/requestHandler.py")
-})
 
 $match = $router->match();
 

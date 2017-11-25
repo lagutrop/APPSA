@@ -3,43 +3,106 @@ var app = angular.module('backoffice');
 app.controller("AdicionarSocioController", function ($scope) {
 	var activeSidebar = document.getElementsByClassName("nav-link active")[0],
 		currentButton = document.getElementById('add');
-	$scope.nRows = document.getElementsByTagName("row-directive").length;
-	$scope.socios = [];
+	$scope.lines = [1];
+	$scope.socios = [{}];
+	$scope.show = false;
+	$scope.dataInserted = false;
 	activeSidebar.classList.remove('active');
 	currentButton.classList.add('active');
-	if ($('#payment')[0].type !== 'date') {
-		$('#payment').datepicker({dateFormat: 'dd/mm/yy'});
-	}
 });
 
-app.controller("submitSocioController", function ($scope, $compile) {
+app.controller("submitSocioController", function ($scope, $http) {
 	$scope.addSocioRow = function () {
-		var socios = document.getElementsByTagName('row-directive'),
-			nrows = socios.length,
-			lastRow = socios[nrows - 1],
-			newRow = document.createElement('row-directive'),
-			minusButton = document.getElementById("deleteRow");
-		$compile(newRow);
-		lastRow.parentNode.insertBefore(newRow, lastRow.nextSibling);
-		$scope.nRows = document.getElementsByTagName("row-directive").length;	
+		var rows = document.getElementsByClassName('socio'),
+			nrows = rows.length,
+			lastRow = rows[nrows - 1];
+		$scope.show = true;
+	$scope.socios.push({});
 	};
 	
 	$scope.removeSocioRow = function () {
-		var socios = document.getElementsByTagName('row-directive'),
-			nrows = socios.length,
-			lastRow = socios[nrows - 1],
-			minusButton = document.getElementById("deleteRow");
+		var rows = document.getElementsByClassName('socio'),
+			nrows = rows.length,
+			lastRow = rows[nrows - 1];
 		lastRow.remove();
-		$scope.nRows = document.getElementsByTagName("row-directive").length;	
+		$scope.socios.pop(nrows - 1);
+		if (nrows <= 2) {
+			$scope.show = false;
+		}
 	};
 	
 	$scope.insertData = function () {
-			
+		$http.post("insertSocio.php", $scope.socios)
+		.success(function(data, status, headers, config) {
+			$scope.dataInserted = true;
+		})
 	};
 });
 
-app.directive('rowDirective', function () {
+app.directive('dateDirective', function () {
 	return {
-		template:'<div class="socio row nomargin"><div class="col-md-4 text-center"><label class="addLabel">Numero de socio</label><input type="number" placeholder="Socio nº" required></div><div class="col-md-4 text-center"><label class="addLabel">Data de pagamento</label><input class="adicionar" id="payment" type="date" placeholder="dd-mm-aaaa" ng-model="socios[nRows]" required></div><div class="col-md-4 text-center"><label class="addLabel">Ano da quota</label><input type="number" placeholder="aaaa" required></div></div>',
+		require: "ng-model",
+		link: function(scope, elem, attr, ngModelCtrl) {
+			if ($(elem)[0].type !== 'date') {
+				$(elem).datepicker({dateFormat: 'dd-mm-yy'});
+			}
+			$(elem)
+			.on('keyup change', function (e) {
+				var date = e.target.value,
+					splittedDate = date.split('-'),
+					pattern = /^[0-9][0-9]?-[0-9][0-9]?-[1-2][0-9][0-9][0-9]$/,
+					testDate = splittedDate[2] + '-' + splittedDate[1] + '-' + splittedDate[0];
+				if (!isNaN(Date.parse(testDate)) && pattern.test(date)) {
+					ngModelCtrl.$setViewValue(e.target.value);
+					ngModelCtrl.$setValidity('value', true);
+					scope.$apply();
+				} else {
+					ngModelCtrl.$setValidity('value', false);
+					scope.$apply();
+				}
+			});
+		}
 	};
 });
+
+app.directive('yearDirective', function () {
+	return {
+		require: "ng-model",
+		link: function(scope, elem, attr, ngModelCtrl) {
+			$(elem)
+			.on('keyup change', function (e) {
+				var year = e.target.value,
+					pattern = new RegExp("^[1-2][0-9][0-9][0-9]$");
+				if (pattern.test(year)) {
+					ngModelCtrl.$setValidity('year', true);
+					scope.$apply();
+				} else {
+					ngModelCtrl.$setValidity('year', false);
+					scope.$apply();
+				}
+			})
+		}
+	}
+});
+
+app.directive('socioDirective', function () {
+	return {
+		require: "ng-model",
+		link: function(scope, elem, attr, ngModelCtrl) {
+			$(elem)
+			.on("keyup change", function(e) {
+				var socio = e.target.value,
+					pattern = /^[[1-9][0-9]*$/;
+				if(pattern.test(socio)) {
+					console.log("test1");
+					ngModelCtrl.$setValidity('socio', true);
+					scope.$apply();
+				} else {
+					console.log("test2");
+					ngModelCtrl.$setValidity('socio', false);
+					scope.$apply();
+				}
+			})
+		}
+	}
+})
