@@ -3,5 +3,5 @@ angular.module('backoffice').controller("ListarSociosController", function ($sco
 		currentButton = document.getElementById('list');
 	activeSidebar.classList.remove('active');
 	currentButton.classList.add('active');
-	$scope.message = "list";
+	$scope.message = "Em manutenção";
 });

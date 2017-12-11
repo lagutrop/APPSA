@@ -26,13 +26,13 @@ privatePage();
 							<a id="welcome" class="nav-link active" href="manage.php">Bem-vindo</a>
 						</li>
 						<li class="nav-item">
-							<a id="add" class="nav-link" href="#!adicionarSocio">Adicionar socio</a>
+							<a id="add" class="nav-link" href="#!adicionarSocio">Adicionar sócio</a>
 						</li>
 						<li class="nav-item">
-							<a id="list" class="nav-link" href="#!listarSocios">Lista de socios</a>
+							<a id="list" class="nav-link" href="#!listarSocios">Lista de sócios</a>
 						</li>
 						<li class="nav-item">
-							<a id="update" class="nav-link" href="#!alterarSocio">Atualizar pagamentos</a>
+							<a id="update" class="nav-link" href="#!eliminarSocio">Eliminar sócio</a>
 						</li>
 					</ul>
 				</nav>
@@ -58,7 +58,7 @@ privatePage();
 		<script src="javascript/login.js"></script>
 		<script src="controllers/adicionarController.js"></script>
 		<script src="controllers/listarController.js"></script>
-		<script src="controllers/alterarController.js"></script>
+		<script src="controllers/eliminarController.js"></script>
 		<script src="controllers/welcomeController.js"></script>
 	</body>
 </html>

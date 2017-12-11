@@ -1,7 +1,7 @@
-angular.module('backoffice').controller("AlterarSocioController", function ($scope) {
+angular.module('backoffice').controller("EliminarSocioController", function ($scope) {
 	var activeSidebar = document.getElementsByClassName("nav-link active")[0],
 		currentButton = document.getElementById('update');
 	activeSidebar.classList.remove('active');
 	currentButton.classList.add('active');
-	$scope.message = "mod";
+	$scope.message = "Em manutenção";
 });

@@ -14,9 +14,9 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
 			templateUrl: 'listar.php',
 			controller: 'ListarSociosController'
 		})
-		.when('/alterarSocio', {
-			templateUrl: 'alterar.php',
-			controller: 'AlterarSocioController'
+		.when('/eliminarSocio', {
+			templateUrl: 'eliminar.php',
+			controller: 'EliminarSocioController'
 		})
 		.otherwise({
 			redirectTo: "/welcome"

@@ -3,10 +3,7 @@ var app = angular.module('backoffice');
 app.controller("AdicionarSocioController", function ($scope) {
 	var activeSidebar = document.getElementsByClassName("nav-link active")[0],
 		currentButton = document.getElementById('add');
-	$scope.lines = [1];
-	$scope.socios = [{}];
-	$scope.show = false;
-	$scope.dataInserted = false;
+    $scope.addObjects = {lines: [1], socios: [{}], show: false, errorMessage: "", dataInserted: false, dataError: false};
 	activeSidebar.classList.remove('active');
 	currentButton.classList.add('active');
 });
@@ -16,8 +13,8 @@ app.controller("submitSocioController", function ($scope, $http) {
 		var rows = document.getElementsByClassName('socio'),
 			nrows = rows.length,
 			lastRow = rows[nrows - 1];
-		$scope.show = true;
-	$scope.socios.push({});
+		$scope.addObjects.show = true;
+	$scope.addObjects.socios.push({});
 	};
 	
 	$scope.removeSocioRow = function () {
@@ -25,18 +22,36 @@ app.controller("submitSocioController", function ($scope, $http) {
 			nrows = rows.length,
 			lastRow = rows[nrows - 1];
 		lastRow.remove();
-		$scope.socios.pop(nrows - 1);
+		$scope.addObjects.socios.pop(nrows - 1);
 		if (nrows <= 2) {
-			$scope.show = false;
+			$scope.addObjects.show = false;
 		}
 	};
 	
 	$scope.insertData = function () {
-		$http.post("insertSocio.php", $scope.socios)
-		.success(function(data, status, headers, config) {
-			$scope.dataInserted = true;
-		})
+		$http.post("cgi-bin/insertSocio.php", $scope.addObjects.socios)
+            .then(function onSuccess(data) {
+                $scope.addObjects.socios = [{}];
+                $scope.addObjects.show = false;
+                $scope.addObjects.dataInserted = true;
+                $scope.addObjects.dataError = false;
+                $scope.addSocioForm.$setUntouched();
+                $scope.addSocioForm.$setPristine();
+            })
+            .catch(function onError(response) {
+                $scope.addObjects.errorMessage = response.data.data;
+                $scope.addObjects.dataError = true;
+                $scope.addObjects.dataInserted = false;
+            });
 	};
+    
+    $scope.disableInsertButton = function () {
+        $scope.addObjects.dataInserted = false;
+    };
+    
+    $scope.disableErrorButton = function () {
+        $scope.addObjects.dataError = false;
+    };
 });
 
 app.directive('dateDirective', function () {
@@ -73,16 +88,16 @@ app.directive('yearDirective', function () {
 			.on('keyup change', function (e) {
 				var year = e.target.value,
 					pattern = new RegExp("^[1-2][0-9][0-9][0-9]$");
-				if (pattern.test(year)) {
+				if (pattern.test(year) && year >= 1901 && year <= 2155) {
 					ngModelCtrl.$setValidity('year', true);
 					scope.$apply();
 				} else {
 					ngModelCtrl.$setValidity('year', false);
 					scope.$apply();
 				}
-			})
+			});
 		}
-	}
+	};
 });
 
 app.directive('socioDirective', function () {
@@ -94,15 +109,13 @@ app.directive('socioDirective', function () {
 				var socio = e.target.value,
 					pattern = /^[[1-9][0-9]*$/;
 				if(pattern.test(socio)) {
-					console.log("test1");
 					ngModelCtrl.$setValidity('socio', true);
 					scope.$apply();
 				} else {
-					console.log("test2");
 					ngModelCtrl.$setValidity('socio', false);
 					scope.$apply();
 				}
-			})
+			});
 		}
-	}
-})
+	};
+});
