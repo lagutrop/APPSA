@@ -10,11 +10,9 @@ def tupleParser(tup):
     arraySocios = []
     for key in tup:
         dictSocios = {}
-        dictSocios["id"] = str(key[0])
-        dictSocios["nome"] = str(key[1])
-        dictSocios["local"] = str(key[2])
-        dictSocios["data_pagamento"] = str(key[3])
-        dictSocios["data_expira"] = str(key[4])
+        dictSocios["numero_socio"] = str(key[0])
+        dictSocios["quota"] = str(key[1])
+        dictSocios["data_pagamento"] = str(key[2])
         arraySocios.append(dictSocios)
     return arraySocios
 

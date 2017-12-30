@@ -9,16 +9,17 @@ app.directive('formDirective', function ($http) {
 				$http.get(url)
 					.then(function (response) {
 						if (response.data.length > 0) {
+                            console.log(response.data);
+                            scope.isSocio = "Parabéns, as quotas do ano corrente estão pagas! Obrigado por contribuires para esta causa.";
 							contr.$setValidity('val', true);
-							scope.table = response.data;
 						} else {
 							contr.$setValidity('val', false);
-							scope.table = "O numero ou nome de socio introduzido nao e valido";
+                            scope.isSocio = "Lamentamos, mas as quotas do ano corrente ainda não estão pagas.";
 						}
 					})
 					.catch(function () {
 						contr.$setValidity('val', false);
-						scope.table = "O numero ou nome de socio introduzido nao e valido";
+						scope.isSocio = "Lamentamos, mas as quotas do ano corrente ainda não estão pagas.";
 					});
 				return value;
 			}

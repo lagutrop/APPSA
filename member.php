@@ -32,7 +32,7 @@ privatePage();
 				<img id="appsa_logo" class="d-block mx-auto img-fluid" src="assets/appsa_logo_aprov-1.jpg" alt="Logo da associaçao APPSA">
 			</div>
 			<div class="col-md-12">
-				<h1 class="text-center">Procure um sócio</h1>
+				<h1 class="text-center">Procurar sócio</h1>
 			</div>
 			<form id="appsa-form" name="appsa" class="col-md-12 novalidate">
 				<label for="socio">Número de sócio</label>
@@ -46,16 +46,13 @@ privatePage();
 					</div>
 					<div class="card-info">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Númerode sócio: {{table[0].id}}</p>
+							<p>Número de sócio: {{table[0].numero_socio}}</p>
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Nome: {{table[0].nome}}</p>
+							<p>Quota: {{table[0].quota}}</p>
 						</div>
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
 							<p>Data do pagamento: {{table[0].data_pagamento}}</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Cartao expira em: {{table[0].data_expira}}</p>
 						</div>
 					</div>
 				</div>

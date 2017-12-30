@@ -33,26 +33,17 @@ redirectLoggedUsers();
 			</div>
 			<form id="appsa-form" name="appsa" class="col-md-12 novalidate">
 				<label for="socio">Número de sócio</label>
-				<input name="control" class="form-control" id="socioForm" ng-model="socioId" required form-directive placeholder="Insira o seu número de sócio">
-				<div class="text-center input-info" ng-show="appsa.control.$invalid && appsa.control.$dirty">Insira um nome ou número de sócio correto</div>
+				<input name="control" type="number" class="form-control" id="socioForm" ng-model="socioId" required form-directive placeholder="Insira o seu número de sócio">
+				<div class="text-center input-info" ng-show="appsa.control.$error.required && appsa.control.$dirty">Insira um número de sócio válido</div>
 			</form>
-			<div class="container-fluid input-info d-block mx-auto" ng-class="{cardEnabled: appsa.control.$valid, cardDisabled: appsa.control.$invalid}">
+			<div class="container-fluid input-info d-block mx-auto" ng-class="{cardError: !appsa.control.$valid, cardEnabled: !appsa.control.$error.required, cardDisabled: appsa.control.$error.required}">
 				<div class="row">
-					<div class="col-md-12">
+					<div class="col-md-12 nomargin">
 						<img src="assets/transp.png" id="card-logo" class="float-right" alt="Logo do cartao de socio">
 					</div>
 					<div class="card-info">
 						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Númerode sócio: {{table[0].id}}</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Nome: {{table[0].nome}}</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Data do pagamento: {{table[0].data_pagamento}}</p>
-						</div>
-						<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-							<p>Cartao expira em: {{table[0].data_expira}}</p>
+							<p class="text-center">{{isSocio}}</p>
 						</div>
 					</div>
 				</div>

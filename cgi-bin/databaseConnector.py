@@ -28,7 +28,7 @@ def getSocio(identifier):
     name_parsed = identifier.replace("%20", " ")
     database = databaseConnect()
     cursor = database.cursor()
-    cursor.execute("""SELECT quota FROM socio WHERE numero_socio = concat(%s)""", (name_parsed))
+    cursor.execute("""SELECT numero_socio, quota, data FROM socio WHERE numero_socio = %s and quota = year(curdate())""", (name_parsed,))
     socio = cursor.fetchall()
     database.close()
     return socio
@@ -36,7 +36,7 @@ def getSocio(identifier):
 def getAllSocios():
     database = databaseConnect()
     cursor= database.cursor()
-    cursor.execute("""SELECT quota FROM socio""")
+    cursor.execute("""SELECT numero_socio, quota, data FROM socio""")
     socios = cursor.fetchall()
     database.close()
     return socios

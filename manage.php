@@ -18,9 +18,18 @@ privatePage();
 		<title>Back-office</title>
 	</head>
 	<body ng-app="backoffice">
-		<div class="container-fluid">
+	    <nav class="navbar navbar-expand-md navbar-light bg-faded fixed-top">
+            <a class="navbar-brand" href="#"><img id="appsa_small" src="assets/transp.png">APPSA</a>
+		    <div class="ml-auto">
+		        <a class="btn btn-outline-primary" href="index.php" role="button">Home</a>
+			        <form id="logout" name="logout" action="logout.php" method="post">
+				        <button class="btn btn-outline-primary" href="logout.php" role="button">Logout</button>
+				    </form>
+            </div>
+        </nav>
+		<div class="container-fluid dashboard-container">
 			<div class="row">
-				<nav class="col-md-2 bg-faded sidebar">
+				<nav class="col-xs-12 col-sm-2 col-md-2 bg-faded sidebar">
 					<ul class="nav nav-pills flex-column">
 						<li class="nav-item">
 							<a id="welcome" class="nav-link active" href="manage.php">Bem-vindo</a>
@@ -36,16 +45,7 @@ privatePage();
 						</li>
 					</ul>
 				</nav>
-				<main class="dashboard col-md-10 ml-auto">
-					<nav class="navbar navbar-expand-md navbar-light bg-faded">
-						<a class="navbar-brand" href="#"><img id="appsa_small" src="assets/transp.png">APPSA</a>
-						<div class="ml-auto">
-							<a class="btn btn-outline-primary" href="index.php" role="button">Home</a>
-							<form id="logout" name="logout" action="logout.php" method="post">
-								<button class="btn btn-outline-primary" href="logout.php" role="button">Logout</button>
-							</form>
-						</div>
-					</nav>
+				<main class="dashboard col-xs-12 col-sm-10 col-md-10 ml-auto">
 					<div ng-view></div>
 				</main>
 			</div>

@@ -10,7 +10,7 @@ $dbName = "appsa";
 $table = "socio";
 $conn = new mysqli($serverName, $du, $dp, $dbName);
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
-// Check connection
+// Verificar conexão
 if ($conn->connect_error) {
 	die("Connection failed: " . $conn->connect_error);
 }

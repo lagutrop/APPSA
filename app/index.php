@@ -2,7 +2,7 @@
 header("Content-Type: text/json");
 include '../lib//AltoRouter.php';
 $router = new AltoRouter();  
-$router->setBasePath('/appsa/app');
+$router->setBasePath('/APPSA/app');
 
 $router->map('GET', '/socio', function() {  
 	exec("python ../cgi-bin/requestHandler.py", $output);

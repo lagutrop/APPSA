@@ -1,6 +1,7 @@
 <?php
 include("validation.php");
 privatePage();
+renewSession();
 ?>
 <div class="wrapper" ng-controller="submitSocioController">
 <div class="jumbotron text-center">
@@ -31,15 +32,15 @@ privatePage();
 			</div>
 		</div>
 		<div class="socio row nomargin" ng-repeat="socio in addObjects.socios">
-			<div class="col-md-4 text-center">
+			<div class="col-sm-12 col-md-4 text-center">
 				<label class="addLabel">Número de sócio</label>
 				<input type="number" name="socio" placeholder="Socio nº" ng-model="addObjects.socios[$index].socio" socio-directive required>
 			</div>
-			<div class="col-md-4 text-center">
+			<div class="col-sm-12 col-md-4 text-center">
 				<label class="addLabel">Data de pagamento</label>
 				<input class="adicionar payment" name="payment" type="text" placeholder="dd-mm-aaaa" ng-model="addObjects.socios[$index].data" date-directive required>
 			</div>
-			<div class="col-md-4 text-center">
+			<div class="col-sm-12 col-md-4 text-center">
 				<label class="addLabel">Ano da quota</label>
 				<input type="number" name="quota" placeholder="aaaa" ng-model="addObjects.socios[$index].quota" year-directive required>
 			</div>
