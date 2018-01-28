@@ -1,6 +1,6 @@
-var app = angular.module('backoffice', ["ngRoute", "ngSanitize"]);
+var app = angular.module('backoffice', ["ngRoute"]);
 
-app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $locationProvider) {
+app.config(['$routeProvider', '$locationProvider', function ($routeProvider) {
 	$routeProvider
 		.when('/welcome', {
 			templateUrl: 'welcome.php',
@@ -18,6 +18,10 @@ app.config(['$routeProvider', '$locationProvider', function ($routeProvider, $lo
 			templateUrl: 'eliminar.php',
 			controller: 'EliminarSocioController'
 		})
+        .when('/mudarPassword', {
+            templateUrl: 'change.php',
+            controller: 'MudarSenhaController'
+        })
 		.otherwise({
 			redirectTo: "/welcome"
 		});

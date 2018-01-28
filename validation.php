@@ -1,39 +1,23 @@
 <?php
+include_once("Database.php");
+include_once("Session.php");
 ini_set("session.use_strict_mode", 1);
 session_start();
 
-function connectDb() {
-    $servername = "localhost";
-	$username = "root";
-	$password = "root";
-	$dbname = "appsa";
-    // Create connection
-	$conn = new mysqli($servername, $username, $password, $dbname);
-	// Check connection
-	if ($conn->connect_error) {
-    	die("Connection failed: " . $conn->connect_error);
-	}
-    return $conn;
-}
-
-function deleteExpiredSessions() {
-    $conn = connectDb();
-    $sql = "DELETE FROM sessao WHERE data + 10 < unix_timestamp()";
-    $result = $conn->query($sql);
-}
-
-function deleteSession($id) {
-    $conn = connectDb();
-    $sql = "DELETE FROM sessao WHERE id = '".$id."'";
-    $result = $conn->query($sql);
-}
-
+/**
+ * User Login Validation
+ * @param $user
+ * @param $pw
+ * @return bool
+ */
 function checkDb($user, $pw) {
-	$user = addslashes($user);
-  	$pass = addslashes($pw);
-	$conn = connectDb();
-	$sql = "SELECT senha FROM utilizador WHERE nome = '".$user."' LIMIT 1";
-	$result = $conn->query($sql);
+    $database = new Database();
+    $session = new Session();
+    if (!validateInput($user)) {
+        return false;
+    }
+    $user = $database->escape($user);
+    $result = $database->select('senha', 'utilizador', 'nome = ? LIMIT 1', 's', [$user]);
 	if ($result->num_rows > 0) {
     	while($row = $result->fetch_assoc()) {
 			$dbpw = $row['senha'];
@@ -41,22 +25,28 @@ function checkDb($user, $pw) {
 	} else {
     	return false;
 	}
-	$verifier = password_verify($pass, $dbpw);
-    deleteExpiredSessions();
-    $sql = "SELECT COUNT(nome) as total FROM sessao WHERE nome = '".$user."'";
-    $result = $conn->query($sql);
+    if (!empty($dbpw)) {
+        $verifier = password_verify($pw, $dbpw);
+    } else {
+        return false;
+    }
+    $session->delete();
+    $result = $database->select(
+        'COUNT(nome) as total',
+        'sessao',
+        'nome = ?',
+        's', [$user]
+    );
     $data = $result->fetch_assoc();
 	if ($verifier === true && $data['total'] <= 0) {
-        $timeStamp = time();
-        $_SESSION['authenticated'] = true;
-        $_SESSION['timestamp'] = $timeStamp;
-        session_regenerate_id(true); 
-        $sql = "INSERT INTO sessao VALUES('".session_id()."', '".$user."', '".$timeStamp."')";
-        $result = $conn->query($sql);
-		$conn->close();
-		return true;
-	}
-	$conn->close();
+        $session->insert($user);
+        return true;
+    } else {
+        if ($verifier === true && $data['total'] > 0) {
+            $session->update('nome', $user);
+            return true;
+        }
+    }
 	return false;
 }
 
@@ -74,53 +64,46 @@ function checkDb($user, $pw) {
 	return $token;
 }*/
 
+/**
+ * Page that requires authentication to be viewed
+ */
 function privatePage() {
- 	if (!isset($_SESSION['authenticated']) || time() - $_SESSION['timestamp'] > 1800) {
-    	logOut();
-  	}
-}
-
-function renewSession() {
-    $oldSessionId = session_id();
-    $timeStamp = time();
-    $conn = connectDb();
-    $expired = isExpired() ? 'true' : 'false';
-    if (!isExpired()) {
-        session_regenerate_id(true);
-        $newSessionId = session_id();
-        $sql = "UPDATE sessao SET id = '".$newSessionId."' WHERE id = '".$oldSessionId."'";
-        $result = $conn->query($sql);
-        $_SESSION['timestamp'] = $timeStamp;	
-	} else {
+    if (!isset($_SESSION['authenticated']) || time() - $_SESSION['timestamp'] > 3600) {
         logOut();
     }
 }
 
-function isExpired() {
-    deleteExpiredSessions();
-    $conn = connectDb();
-    $sessionId = session_id();
-    $sql = "SELECT id FROM sessao WHERE id = '".$sessionId."'";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        return false;
-    }
-    return true;
-}
-
+/**
+ * Redirect users to specific page
+ */
 function redirectLoggedUsers() {
 	if (isset($_SESSION['authenticated'])) {
-		header("Location: member.php");
+        header("Location: manage.php");
 		exit();
 	}
 }
 
+/**
+ * Logout connected users
+ */
 function logOut() {
-  	unset($_SESSION['authenticated']);
-    unset($_SESSION['timestamp']);
-    deleteSession(session_id());
-	session_destroy();
-  	header("Location: index.php");
+    $session = new Session();
+    $session->delete($session->get());
+    $session->destroy();
+    header("Location: login.php");
 	exit();
 }
-?>
+
+/**
+ * Remove bad characters to avoid injection
+ * @param $value
+ * @return bool
+ */
+function validateInput($value)
+{
+    $value = filter_var($value, FILTER_SANITIZE_STRING);
+    if (!isset($value)) {
+        return false;
+    }
+    return true;
+}

@@ -18,7 +18,7 @@ class Database:
         
 def databaseConnect():
     #Setup initial variables
-    db1 = Database('localhost', 'appsa_admin', 'appsa_admin', 'appsa')
+    db1 = Database('localhost', 'appsa_admin', 'Appsa_admin1', 'APPSA')
     
     #Database connection
     database = MySQLdb.connect(host=db1.host, user=db1.user, passwd=db1.pw, db=db1.db, use_unicode=True, charset='utf8')

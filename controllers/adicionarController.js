@@ -1,6 +1,9 @@
+/*global angular, $, document, window*/
+
 var app = angular.module('backoffice');
 
 app.controller("AdicionarSocioController", function ($scope, $http) {
+    "use strict";
     var activeSidebar = document.getElementsByClassName("nav-link active")[0],
         currentButton = document.getElementById('add');
     $scope.addObjects = {
@@ -9,92 +12,64 @@ app.controller("AdicionarSocioController", function ($scope, $http) {
         show: false,
         errorMessage: "",
         dataInserted: false,
-        dataError: false
+        dataError: false,
+        loading: false,
+        buttonsDisabled: false
     };
     activeSidebar.classList.remove('active');
     currentButton.classList.add('active');
-    $http.get("expire.php")
-        .then(function (response) {
-            if (response.data.data === "expired") {
-                window.location.replace('/APPSA');
-            }
-        });
-});
 
-app.controller("submitSocioController", function ($scope, $http) {
-    $scope.addSocioRow = function () {
+    $scope.plusButton = function () {
         var rows = document.getElementsByClassName('socio'),
             nrows = rows.length,
-            lastRow = rows[nrows - 1];
-        $http.get("expire.php")
-            .then(function (response) {
-                if (response.data.data === "expired") {
-                    $http.post("logout.php")
-                        .then(function (data) {
-                            window.location.replace('/APPSA');
-                        });
-                } else {
-                    $http.post("renew.php")
-                        .then(function (response) {
-                            $scope.addObjects.show = true;
-                            $scope.addObjects.socios.push({});
-                        });
-                }
-            });
+            index = nrows - 1;
+        rows[index].style.borderBottomStyle = 'inset';
+        $scope.addObjects.show = true;
+        $scope.addObjects.socios.push({});
+    };
+
+    $scope.minusButton = function () {
+        var rows = document.getElementsByClassName('socio'),
+            nrows = rows.length,
+            index = nrows - 1,
+            lastRow = rows[index];
+        lastRow.remove();
+        $scope.addObjects.socios.pop(index);
+        rows[index - 1].style.borderBottomStyle = 'hidden';
+        if (nrows <= 2) {
+            $scope.addObjects.show = false;
+        }
+    };
+
+    $scope.insert = function () {
+        $http.post("cgi-bin/insertSocio.php", $scope.addObjects.socios)
+            .then(function onSuccess() {
+                    $scope.addObjects.socios = [{}];
+                    $scope.addObjects.show = false;
+                    $scope.addObjects.dataInserted = true;
+                    $scope.addObjects.dataError = false;
+                    $scope.addSocioForm.$setUntouched();
+                    $scope.addSocioForm.$setPristine();
+                    $scope.addObjects.loading = false;
+                },
+                function onError(response) {
+                    $scope.addObjects.errorMessage = response.data.data;
+                    $scope.addObjects.dataError = true;
+                    $scope.addObjects.dataInserted = false;
+                    $scope.addObjects.loading = false;
+                });
+    };
+
+    $scope.addSocioRow = function () {
+        $scope.expire('plus');
     };
 
     $scope.removeSocioRow = function () {
-        var rows = document.getElementsByClassName('socio'),
-            nrows = rows.length,
-            lastRow = rows[nrows - 1];
-        $http.get("expire.php")
-            .then(function (response) {
-                if (response.data.data === "expired") {
-                    $http.post("logout.php")
-                        .then(function (data) {
-                            window.location.replace('/APPSA');
-                        });
-                } else {
-                    $http.post("renew.php")
-                        .then(function (response) {
-                            lastRow.remove();
-                            $scope.addObjects.socios.pop(nrows - 1);
-                            if (nrows <= 2) {
-                                $scope.addObjects.show = false;
-                            }
-                        });
-                }
-            });
+        $scope.expire('minus');
     };
 
     $scope.insertData = function () {
-        $http.get("expire.php")
-            .then(function (response) {
-                if (response.data.data === "expired") {
-                    $http.post("logout.php")
-                        .then(function (data) {
-                            window.location.replace('/APPSA');
-                        });
-                } else {
-                    $http.post("renew.php")
-                        .then(function (response) {
-                            $http.post("cgi-bin/insertSocio.php", $scope.addObjects.socios)
-                                .then(function onSuccess(data) {
-                                    $scope.addObjects.socios = [{}];
-                                    $scope.addObjects.show = false;
-                                    $scope.addObjects.dataInserted = true;
-                                    $scope.addObjects.dataError = false;
-                                    $scope.addSocioForm.$setUntouched();
-                                    $scope.addSocioForm.$setPristine();
-                                })
-                                .catch(function onError(response) {
-                                    $scope.addObjects.errorMessage = response.data.data;
-                                    $scope.addObjects.dataError = true;
-                                    $scope.addObjects.dataInserted = false;
-                                });
-                        });
-                }
-            });
+        $scope.expire('insert');
     };
 
     $scope.disableInsertButton = function () {
@@ -104,9 +79,52 @@ app.controller("submitSocioController", function ($scope, $http) {
     $scope.disableErrorButton = function () {
         $scope.addObjects.dataError = false;
     };
+
+    $scope.expire = function (button) {
+        $scope.addObjects.loading = true;
+        $scope.addObjects.buttonsDisabled = true;
+        $http.get("expire.php")
+            .then(function (response) {
+                if (response.data.data === "expired") {
+                    $http.post("logout.php")
+                        .then(function () {
+                            window.location.replace('/appsa/login.php');
+                            $scope.addObjects.buttonsDisabled = false;
+                            $scope.addObjects.loading = false;
+                        });
+                } else {
+                    $http.post("renew.php")
+                        .then(function () {
+                            switch (button) {
+                                case 'plus':
+                                    $scope.plusButton();
+                                    $scope.addObjects.loading = false;
+                                    $scope.addObjects.buttonsDisabled = false;
+                                    break;
+                                case 'minus':
+                                    $scope.minusButton();
+                                    $scope.addObjects.loading = false;
+                                    $scope.addObjects.buttonsDisabled = false;
+                                    break;
+                                case 'insert':
+                                    $scope.insert();
+                                    $scope.addObjects.loading = false;
+                                    $scope.addObjects.buttonsDisabled = false;
+                                    break;
+                                default:
+                                    $scope.addObjects.loading = false;
+                                    $scope.addObjects.buttonsDisabled = false;
+                                    break;
+                            }
+                        });
+                }
+            });
+    };
+    $scope.expire();
 });
 
 app.directive('dateDirective', function () {
+    "use strict";
     return {
         require: "ng-model",
         link: function (scope, elem, attr, ngModelCtrl) {
@@ -135,6 +153,7 @@ app.directive('dateDirective', function () {
 });
 
 app.directive('yearDirective', function () {
+    "use strict";
     return {
         require: "ng-model",
         link: function (scope, elem, attr, ngModelCtrl) {
@@ -155,13 +174,14 @@ app.directive('yearDirective', function () {
 });
 
 app.directive('socioDirective', function () {
+    "use strict";
     return {
         require: "ng-model",
         link: function (scope, elem, attr, ngModelCtrl) {
             $(elem)
                 .on("keyup change", function (e) {
                     var socio = e.target.value,
-                        pattern = /^[[1-9][0-9]*$/;
+                        pattern = /^[1-9][0-9]*$/;
                     if (pattern.test(socio)) {
                         ngModelCtrl.$setValidity('socio', true);
                         scope.$apply();

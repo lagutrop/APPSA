@@ -2,9 +2,11 @@ CREATE DATABASE if not exists APPSA;
 
 USE APPSA;
 
-CREATE USER if not exists 'appsa_admin'@'localhost' IDENTIFIED BY 'appsa_admin';
+CREATE USER IF NOT EXISTS 'appsa_admin'@'localhost'
+  IDENTIFIED BY 'Appsa_admin1';
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON APPSA.* TO 'appsa_admin'@'localhost' IDENTIFIED BY 'appsa_admin';
+GRANT SELECT, INSERT, UPDATE, DELETE ON APPSA.* TO 'appsa_admin'@'localhost'
+IDENTIFIED BY 'Appsa_admin1';
 
 CREATE TABLE if not exists socio (numero_socio INT NOT NULL, quota YEAR NOT NULL, data DATE NOT NULL,PRIMARY KEY(numero_socio, quota));
 

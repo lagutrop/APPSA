@@ -1,10 +1,10 @@
 <?php
 include('validation.php');
+$session = new Session();
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
-    if (isExpired()) {
-        echo json_encode(array("data"=>"expired"));    
+    if ($session->isExpired()) {
+        echo json_encode(["data" => "expired"]);
     } else {
-        echo json_encode(array("data"=>"logged"));
+        echo json_encode(["data" => "logged"]);
     }
 }
-?>
